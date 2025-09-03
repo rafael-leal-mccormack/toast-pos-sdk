@@ -1,0 +1,56 @@
+{
+  "name": "@rafael/toast-sdk",
+  "version": "0.0.1",
+  "description": "Node.js SDK for Toast POS API",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
+    "dev": "webpack --mode=development --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "node demo/tests/all-tests.js",
+    "test:client": "node demo/tests/client-tests.js",
+    "test:http": "node demo/tests/http-client-tests.js",
+    "demo": "node demo/examples/all-demos.js",
+    "demo:basic": "node demo/examples/basic-usage.js",
+    "demo:http": "node demo/examples/http-client-demo.js",
+    "demo:auth": "node demo/examples/auth-demo.js"
+  },
+  "keywords": [
+    "toast",
+    "pos",
+    "restaurant",
+    "api",
+    "sdk",
+    "nodejs"
+  ],
+  "author": "Rafael",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rafael/toast-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rafael/toast-sdk/issues"
+  },
+  "homepage": "https://github.com/rafael/toast-sdk#readme",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-loader": "^9.4.0",
+    "typescript": "^5.0.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
