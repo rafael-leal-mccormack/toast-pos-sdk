@@ -80,6 +80,8 @@ export class ToastAuth {
 
 /**
  * Convenience function to quickly get an access token
+ * 
+ * Try not to call this directly from the client because it will expose your client secret to the browser. Call it from a server.
  */
 export async function getToastToken(config: AuthConfig): Promise<string> {
   const auth = new ToastAuth(config);
