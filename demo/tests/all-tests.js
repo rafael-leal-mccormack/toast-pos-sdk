@@ -26,6 +26,8 @@ async function runAllTests() {
   const tests = [
     'client-tests.js',
     'http-client-tests.js',
+    'orders-tests.js',
+    'restaurants-tests.js',
   ];
 
   let passed = 0;

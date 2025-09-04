@@ -85,5 +85,5 @@ export class ToastAuth {
  */
 export async function getToastToken(config: AuthConfig): Promise<string> {
   const auth = new ToastAuth(config);
-  return auth.getAccessToken();
+  return await auth.getAccessToken();
 }

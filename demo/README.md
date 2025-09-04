@@ -116,7 +116,7 @@ The HTTP client tests use JSONPlaceholder (https://jsonplaceholder.typicode.com)
 These examples show how to integrate the Toast SDK in your own projects:
 
 ```javascript
-const { ToastClient, getToastToken } = require('@rafael/toast-sdk');
+const { ToastClient, getToastToken } = require('toast-pos-sdk');
 
 // Get a token (in real usage)
 const token = await getToastToken({

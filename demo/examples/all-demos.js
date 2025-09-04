@@ -2,6 +2,8 @@
 const { basicUsageExamples } = require('./basic-usage');
 const { httpClientDemo } = require('./http-client-demo');
 const { authDemo } = require('./auth-demo');
+const { ordersDemo } = require('./orders-demo');
+const { restaurantsDemo } = require('./restaurants-demo');
 
 async function runAllDemos() {
   console.log('🚀 Running all Toast SDK demos...\n');
@@ -15,6 +17,12 @@ async function runAllDemos() {
     console.log('=' .repeat(60));
     
     await authDemo();
+    console.log('=' .repeat(60));
+    
+    await ordersDemo();
+    console.log('=' .repeat(60));
+    
+    await restaurantsDemo();
     console.log('=' .repeat(60));
     
     console.log('🎉 All demos completed successfully!');

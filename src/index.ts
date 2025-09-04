@@ -2,17 +2,15 @@
 export { ToastClient } from './client/toast-client';
 export { HttpClient } from './client/http-client';
 
+// API clients
+export { OrdersApi } from './api/orders';
+export { RestaurantsApi } from './api/restaurants';
+
 // Authentication utilities
 export { ToastAuth, getToastToken } from './utils/auth';
 
 // Type definitions
-export type {
-  ToastClientConfig,
-  ToastApiResponse,
-  ToastApiError,
-  HttpMethod,
-  RequestConfig,
-} from './types';
+export * from './types';
 
 export type {
   AuthConfig,

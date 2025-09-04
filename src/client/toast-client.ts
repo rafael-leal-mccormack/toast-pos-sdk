@@ -1,5 +1,7 @@
 import { ToastClientConfig } from '../types';
 import { HttpClient } from './http-client';
+import { OrdersApi } from '../api/orders';
+import { RestaurantsApi } from '../api/restaurants';
 
 /**
  * Main Toast POS API client
@@ -7,6 +9,8 @@ import { HttpClient } from './http-client';
 export class ToastClient {
   private httpClient: HttpClient;
   private config: ToastClientConfig;
+  private _orders: OrdersApi;
+  private _restaurants: RestaurantsApi;
 
   constructor(host: string, token: string);
   constructor(token: string);
@@ -41,6 +45,10 @@ export class ToastClient {
 
     // Initialize HTTP client
     this.httpClient = new HttpClient(this.config);
+    
+    // Initialize API clients
+    this._orders = new OrdersApi(this.httpClient);
+    this._restaurants = new RestaurantsApi(this.httpClient);
   }
 
   /**
@@ -64,6 +72,9 @@ export class ToastClient {
     this.config.token = token;
     // Reinitialize HTTP client with new token
     this.httpClient = new HttpClient(this.config);
+    // Reinitialize API clients with new HTTP client
+    this._orders = new OrdersApi(this.httpClient);
+    this._restaurants = new RestaurantsApi(this.httpClient);
   }
 
   /**
@@ -73,9 +84,22 @@ export class ToastClient {
     return this.httpClient;
   }
 
+  /**
+   * Access to the Orders API
+   */
+  get orders(): OrdersApi {
+    return this._orders;
+  }
+
+  /**
+   * Access to the Restaurants API
+   */
+  get restaurants(): RestaurantsApi {
+    return this._restaurants;
+  }
+
   // Future API methods will be added here
   // For example:
-  // get orders() { return new OrdersApi(this.httpClient); }
   // get menu() { return new MenuApi(this.httpClient); }
   // get customers() { return new CustomersApi(this.httpClient); }
 }

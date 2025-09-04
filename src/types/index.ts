@@ -44,3 +44,9 @@ export interface RequestConfig {
   params?: Record<string, any>;
   headers?: Record<string, string>;
 }
+
+// Re-export all order types
+export * from './orders';
+
+// Re-export all restaurant types
+export * from './restaurants';

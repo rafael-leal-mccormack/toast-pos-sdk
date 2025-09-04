@@ -17,10 +17,14 @@
     "test": "node demo/tests/all-tests.js",
     "test:client": "node demo/tests/client-tests.js",
     "test:http": "node demo/tests/http-client-tests.js",
+    "test:orders": "node demo/tests/orders-tests.js",
+    "test:restaurants": "node demo/tests/restaurants-tests.js",
     "demo": "node demo/examples/all-demos.js",
     "demo:basic": "node demo/examples/basic-usage.js",
     "demo:http": "node demo/examples/http-client-demo.js",
-    "demo:auth": "node demo/examples/auth-demo.js"
+    "demo:auth": "node demo/examples/auth-demo.js",
+    "demo:orders": "node demo/examples/orders-demo.js",
+    "demo:restaurants": "node demo/examples/restaurants-demo.js"
   },
   "keywords": [
     "toast",
