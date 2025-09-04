@@ -13,32 +13,32 @@ export class ToastClient {
   private _restaurants: RestaurantsApi;
 
   constructor(host: string, token: string);
-  constructor(token: string);
   constructor(config: ToastClientConfig);
-  constructor(hostOrTokenOrConfig?: string | ToastClientConfig, token?: string) {
+  constructor(hostOrConfig: string | ToastClientConfig, token?: string) {
     // Handle different constructor signatures
-    if (typeof hostOrTokenOrConfig === 'string') {
+    if (typeof hostOrConfig === 'string') {
       if (token) {
         // ToastClient(host, token)
         this.config = {
-          host: hostOrTokenOrConfig,
+          host: hostOrConfig,
           token,
         };
       } else {
-        // ToastClient(token)
-        this.config = {
-          token: hostOrTokenOrConfig,
-        };
+        // Invalid: ToastClient(token) - host is required
+        throw new Error('Host URL is required. Use ToastClient(host, token) or ToastClient(config)');
       }
-    } else if (hostOrTokenOrConfig) {
+    } else if (hostOrConfig) {
       // ToastClient(config)
-      this.config = hostOrTokenOrConfig;
+      this.config = hostOrConfig;
     } else {
       // No arguments provided
-      throw new Error('Authentication token is required. Use ToastClient(token) or ToastClient(host, token) or ToastClient(config)');
+      throw new Error('Host URL and authentication token are required. Use ToastClient(host, token) or ToastClient(config)');
     }
 
-    // Validate required token
+    // Validate required fields
+    if (!this.config.host) {
+      throw new Error('Host URL is required');
+    }
     if (!this.config.token) {
       throw new Error('Authentication token is required');
     }
@@ -62,7 +62,7 @@ export class ToastClient {
    * Get the base URL being used for API calls
    */
   getBaseUrl(): string {
-    return this.config.host || 'https://toast-api-server';
+    return this.config.host;
   }
 
   /**

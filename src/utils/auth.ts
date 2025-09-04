@@ -5,7 +5,7 @@ import { ToastApiResponse } from '../types';
  */
 export interface AuthConfig {
   /** The Toast API host URL */
-  host?: string;
+  host: string;
   /** Client ID for Toast API authentication */
   clientId: string;
   /** Client secret for Toast API authentication */
@@ -42,8 +42,11 @@ export class ToastAuth {
    * Obtain an access token using Toast API authentication
    */
   async getAccessToken(): Promise<string> {
-    const host = this.config.host || 'https://toast-api-server';
-    const tokenUrl = `${host}/authentication/v1/authentication/login`;
+    if (!this.config.host) {
+      throw new Error('Host URL is required for authentication');
+    }
+    
+    const tokenUrl = `${this.config.host}/authentication/v1/authentication/login`;
 
     const requestBody = {
       clientId: this.config.clientId,

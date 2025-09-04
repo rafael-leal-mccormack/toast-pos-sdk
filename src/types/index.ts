@@ -2,8 +2,8 @@
  * Configuration options for the Toast client
  */
 export interface ToastClientConfig {
-  /** The base URL for the Toast API (defaults to https://toast-api-server) */
-  host?: string;
+  /** The base URL for the Toast API */
+  host: string;
   /** Authentication token for API requests */
   token: string;
   /** Request timeout in milliseconds (defaults to 30000) */

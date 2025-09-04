@@ -57,7 +57,7 @@ const runner = new TestRunner();
 
 // Test 1: RestaurantsApi can be instantiated independently
 runner.test('Should create RestaurantsApi instance independently', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   const restaurantsApi = new RestaurantsApi(client.http);
   runner.assert(restaurantsApi !== undefined);
   runner.assert(typeof restaurantsApi.listRestaurants === 'function');
@@ -66,7 +66,7 @@ runner.test('Should create RestaurantsApi instance independently', () => {
 
 // Test 2: ToastClient should have restaurants property
 runner.test('Should provide access to restaurants API through client', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   runner.assert(client.restaurants !== undefined);
   runner.assert(typeof client.restaurants.listRestaurants === 'function');
   runner.assert(typeof client.restaurants.getAllRestaurants === 'function');
@@ -74,7 +74,7 @@ runner.test('Should provide access to restaurants API through client', () => {
 
 // Test 3: Restaurants API methods should exist
 runner.test('Should have all expected restaurants API methods', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   const restaurants = client.restaurants;
   
   // Core methods
@@ -109,7 +109,7 @@ runner.test('Should build correct query parameters for listRestaurants', async (
 
 // Test 5: getAllRestaurants should work (convenience method)
 runner.test('Should provide working convenience method getAllRestaurants', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method to test the convenience wrapper
   const originalMethod = client.restaurants.listRestaurants;
@@ -132,7 +132,7 @@ runner.test('Should provide working convenience method getAllRestaurants', async
 
 // Test 6: getRestaurantsModifiedSince should work
 runner.test('Should provide working convenience method getRestaurantsModifiedSince', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method
   const originalMethod = client.restaurants.listRestaurants;
@@ -155,7 +155,7 @@ runner.test('Should provide working convenience method getRestaurantsModifiedSin
 
 // Test 7: findRestaurantsByName should filter correctly
 runner.test('Should filter restaurants by name correctly', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method with sample data
   const originalMethod = client.restaurants.listRestaurants;
@@ -186,7 +186,7 @@ runner.test('Should filter restaurants by name correctly', async () => {
 
 // Test 8: getRestaurantByGuid should find correct restaurant
 runner.test('Should find restaurant by GUID correctly', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method with sample data
   const originalMethod = client.restaurants.listRestaurants;
@@ -217,7 +217,7 @@ runner.test('Should find restaurant by GUID correctly', async () => {
 
 // Test 9: getActiveRestaurants should filter deleted restaurants
 runner.test('Should filter out deleted restaurants correctly', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method with sample data
   const originalMethod = client.restaurants.listRestaurants;
@@ -249,7 +249,7 @@ runner.test('Should filter out deleted restaurants correctly', async () => {
 
 // Test 10: getRestaurantsByManagementGroup should filter correctly
 runner.test('Should filter restaurants by management group correctly', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method with sample data
   const originalMethod = client.restaurants.listRestaurants;
@@ -281,7 +281,7 @@ runner.test('Should filter restaurants by management group correctly', async () 
 
 // Test 11: Restaurants API should be reinitialized when token is updated
 runner.test('Should reinitialize restaurants API when token is updated', () => {
-  const client = new ToastClient('initial-token');
+  const client = new ToastClient('https://test.com', 'initial-token');
   const originalRestaurantsApi = client.restaurants;
   
   client.setToken('updated-token');
@@ -293,7 +293,7 @@ runner.test('Should reinitialize restaurants API when token is updated', () => {
 
 // Test 12: Should have new detailed restaurant API methods
 runner.test('Should have new detailed restaurant API methods', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   const restaurants = client.restaurants;
   
   // Check for new detailed methods
@@ -342,7 +342,7 @@ runner.test('Should build correct parameters for getRestaurantsByManagementGroup
 
 // Test 15: Should handle empty response data gracefully
 runner.test('Should handle empty response data gracefully', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listRestaurants method to return null data
   const originalMethod = client.restaurants.listRestaurants;

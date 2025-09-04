@@ -57,7 +57,7 @@ const runner = new TestRunner();
 
 // Test 1: OrdersApi can be instantiated independently
 runner.test('Should create OrdersApi instance independently', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   const ordersApi = new OrdersApi(client.http);
   runner.assert(ordersApi !== undefined);
   runner.assert(typeof ordersApi.listOrdersBulk === 'function');
@@ -66,7 +66,7 @@ runner.test('Should create OrdersApi instance independently', () => {
 
 // Test 2: ToastClient should have orders property
 runner.test('Should provide access to orders API through client', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   runner.assert(client.orders !== undefined);
   runner.assert(typeof client.orders.listOrdersBulk === 'function');
   runner.assert(typeof client.orders.getOrder === 'function');
@@ -74,7 +74,7 @@ runner.test('Should provide access to orders API through client', () => {
 
 // Test 3: Orders API methods should exist
 runner.test('Should have all expected orders API methods', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   const orders = client.orders;
   
   // Core methods
@@ -131,7 +131,7 @@ runner.test('Should handle GUID parameter correctly for getOrder', async () => {
 
 // Test 6: Convenience method getOrdersByDateRange should work
 runner.test('Should provide working convenience method getOrdersByDateRange', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listOrdersBulk method to test the convenience wrapper
   const originalMethod = client.orders.listOrdersBulk;
@@ -163,7 +163,7 @@ runner.test('Should provide working convenience method getOrdersByDateRange', as
 
 // Test 7: Convenience method getOrdersByBusinessDate should work
 runner.test('Should provide working convenience method getOrdersByBusinessDate', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listOrdersBulk method
   const originalMethod = client.orders.listOrdersBulk;
@@ -192,7 +192,7 @@ runner.test('Should provide working convenience method getOrdersByBusinessDate',
 
 // Test 8: getAllOrders should handle pagination
 runner.test('Should handle pagination correctly in getAllOrders', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // Mock the listOrdersBulk method to simulate pagination
   const originalMethod = client.orders.listOrdersBulk;
@@ -232,7 +232,7 @@ runner.test('Should handle pagination correctly in getAllOrders', async () => {
 
 // Test 9: Orders API should be reinitialized when token is updated
 runner.test('Should reinitialize orders API when token is updated', () => {
-  const client = new ToastClient('initial-token');
+  const client = new ToastClient('https://test.com', 'initial-token');
   const originalOrdersApi = client.orders;
   
   client.setToken('updated-token');
@@ -244,7 +244,7 @@ runner.test('Should reinitialize orders API when token is updated', () => {
 
 // Test 10: Parameter validation for required fields
 runner.test('Should handle missing required parameters appropriately', async () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   
   // These should not throw immediately (validation happens at HTTP level)
   // but should be properly structured

@@ -58,14 +58,15 @@ class TestRunner {
 
 const runner = new TestRunner();
 
-// Test 1: Basic client creation with token
-runner.test('Should create client with token only', () => {
-  const client = new ToastClient('test-token');
-  runner.assert(client.getConfig().token === 'test-token');
-  runner.assert(client.getBaseUrl() === 'https://toast-api-server');
+// Test 1: Should throw error when only token provided (host required)
+runner.test('Should throw error when only token provided', () => {
+  runner.assertThrows(
+    () => new ToastClient('test-token'),
+    'Should throw error for missing host'
+  );
 });
 
-// Test 2: Client creation with host and token
+// Test 2: Should create client with host and token
 runner.test('Should create client with host and token', () => {
   const client = new ToastClient('https://custom-host.com', 'test-token');
   runner.assert(client.getConfig().token === 'test-token');
@@ -104,7 +105,7 @@ runner.test('Should throw error when empty token provided', () => {
 
 // Test 6: Token update functionality
 runner.test('Should update token correctly', () => {
-  const client = new ToastClient('initial-token');
+  const client = new ToastClient('https://test.com', 'initial-token');
   runner.assertEqual(client.getConfig().token, 'initial-token');
   
   client.setToken('updated-token');
@@ -113,7 +114,7 @@ runner.test('Should update token correctly', () => {
 
 // Test 7: HTTP client access
 runner.test('Should provide access to HTTP client', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   runner.assert(client.http !== undefined);
   runner.assert(typeof client.http.get === 'function');
   runner.assert(typeof client.http.post === 'function');
@@ -124,7 +125,7 @@ runner.test('Should provide access to HTTP client', () => {
 
 // Test 8: Config immutability
 runner.test('Should return immutable config copy', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   const config1 = client.getConfig();
   const config2 = client.getConfig();
   
@@ -140,7 +141,7 @@ runner.test('Should return immutable config copy', () => {
 
 // Test 9: Default timeout value
 runner.test('Should use default timeout when not specified', () => {
-  const client = new ToastClient('test-token');
+  const client = new ToastClient('https://test.com', 'test-token');
   // The timeout should be set in the HTTP client, but we can't easily test that
   // without exposing internal implementation. This test ensures no errors occur.
   runner.assert(client !== undefined);
@@ -148,19 +149,16 @@ runner.test('Should use default timeout when not specified', () => {
 
 // Test 10: Constructor overload handling
 runner.test('Should handle all constructor overloads correctly', () => {
-  // Single token
-  const client1 = new ToastClient('token1');
-  runner.assertEqual(client1.getConfig().token, 'token1');
-  
   // Host and token
-  const client2 = new ToastClient('https://host.com', 'token2');
-  runner.assertEqual(client2.getConfig().token, 'token2');
-  runner.assertEqual(client2.getConfig().host, 'https://host.com');
+  const client1 = new ToastClient('https://host1.com', 'token1');
+  runner.assertEqual(client1.getConfig().token, 'token1');
+  runner.assertEqual(client1.getConfig().host, 'https://host1.com');
   
   // Config object
-  const client3 = new ToastClient({ token: 'token3', timeout: 5000 });
-  runner.assertEqual(client3.getConfig().token, 'token3');
-  runner.assertEqual(client3.getConfig().timeout, 5000);
+  const client2 = new ToastClient({ host: 'https://host2.com', token: 'token2', timeout: 5000 });
+  runner.assertEqual(client2.getConfig().token, 'token2');
+  runner.assertEqual(client2.getConfig().host, 'https://host2.com');
+  runner.assertEqual(client2.getConfig().timeout, 5000);
 });
 
 // Run all tests
