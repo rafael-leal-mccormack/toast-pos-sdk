@@ -14,6 +14,9 @@ demo/
 ├── tests/             # Test files for SDK functionality
 │   ├── client-tests.js      # Tests for ToastClient class
 │   ├── http-client-tests.js # Tests for HTTP client functionality
+│   ├── orders-tests.js      # Tests for Orders API
+│   ├── restaurants-tests.js # Tests for Restaurants API
+│   ├── real-integration-tests.js # Real API integration tests
 │   └── all-tests.js         # Run all tests together
 └── README.md          # This file
 ```
@@ -58,6 +61,18 @@ node demo/tests/http-client-tests.js
 # Run all test suites
 node demo/tests/all-tests.js
 ```
+
+### Real Integration Tests
+
+```bash
+# Run real API integration tests (requires credentials)
+npm run test:real
+
+# Or run directly
+node demo/tests/real-integration-tests.js
+```
+
+**⚠️ Real integration tests require valid Toast API credentials.** See `tests/README.md` for setup instructions.
 
 ## 📝 What Each Example Shows
 

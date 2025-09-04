@@ -16,10 +16,16 @@ export interface AuthConfig {
  * Response structure for token requests
  */
 export interface TokenResponse {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-  scope?: string;
+  '@class': string;
+  token: {
+    tokenType: string;
+    scope: string | null;
+    expiresIn: number;
+    accessToken: string;
+    idToken: string | null;
+    refreshToken: string | null;
+  };
+  status: string;
 }
 
 /**
@@ -61,7 +67,7 @@ export class ToastAuth {
       }
 
       const tokenData = await response.json() as TokenResponse;
-      return tokenData.access_token;
+      return tokenData.token.accessToken;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to obtain access token: ${error.message}`);

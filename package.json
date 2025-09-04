@@ -19,6 +19,7 @@
     "test:http": "node demo/tests/http-client-tests.js",
     "test:orders": "node demo/tests/orders-tests.js",
     "test:restaurants": "node demo/tests/restaurants-tests.js",
+    "test:real": "node demo/tests/real-integration-tests.js",
     "demo": "node demo/examples/all-demos.js",
     "demo:basic": "node demo/examples/basic-usage.js",
     "demo:http": "node demo/examples/http-client-demo.js",
@@ -46,6 +47,7 @@
   "homepage": "https://github.com/rafael-leal-mccormack/toast-pos-sdk#readme",
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "dotenv": "^17.2.2",
     "ts-loader": "^9.4.0",
     "typescript": "^5.0.0",
     "webpack": "^5.88.0",
