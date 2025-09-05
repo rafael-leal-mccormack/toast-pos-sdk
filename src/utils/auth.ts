@@ -1,5 +1,3 @@
-import { ToastApiResponse } from '../types';
-
 /**
  * Configuration for obtaining an authentication token
  */

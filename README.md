@@ -20,10 +20,7 @@ npm install toast-pos-sdk
 ```typescript
 import { ToastClient } from 'toast-pos-sdk';
 
-// Create client with token only (uses default host)
-const client = new ToastClient('your-auth-token');
-
-// Or create client with custom host and token
+// Create client with explicit host and token (required)
 const client = new ToastClient('https://your-toast-api-host', 'your-auth-token');
 
 // Or create client with configuration object
@@ -37,15 +34,19 @@ const client = new ToastClient({
 ### Getting an Authentication Token
 
 ```typescript
-import { getToastToken } from 'toast-pos-sdk';
+import { getToastToken, ToastClient } from 'toast-pos-sdk';
 
+const host = 'https://your-toast-api-host';
+
+// Host is required for token retrieval
 const token = await getToastToken({
-  host: 'https://your-toast-api-host', // optional
+  host,
   clientId: 'your-client-id',
   clientSecret: 'your-client-secret',
 });
 
-const client = new ToastClient(token);
+// Create client with explicit host and token
+const client = new ToastClient(host, token);
 ```
 
 ### Making Custom API Calls
@@ -81,13 +82,13 @@ try {
 
 ### Client Configuration
 
-- `host` (string, optional): Base URL for the Toast API. Defaults to `https://toast-api-server`
+- `host` (string, required): Base URL for the Toast API
 - `token` (string, required): Authentication token for API requests
 - `timeout` (number, optional): Request timeout in milliseconds. Defaults to 30000
 
 ### Authentication Configuration
 
-- `host` (string, optional): Base URL for the Toast API
+- `host` (string, required): Base URL for the Toast API
 - `clientId` (string, required): Your Toast API client ID
 - `clientSecret` (string, required): Your Toast API client secret
 
