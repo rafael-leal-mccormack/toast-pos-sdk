@@ -121,12 +121,12 @@ export class OrdersApi {
    * @returns Promise resolving to all orders across pages
    */
   async getAllOrders(
-    params: Omit<OrdersBulkParams, 'page' | 'pageSize'>,
+    params: OrdersBulkParams,
     maxPages: number = 10
   ): Promise<Order[]> {
     const allOrders: Order[] = [];
-    let currentPage = 0;
-    const pageSize = 100; // Use a reasonable page size
+    let currentPage = params.page || 1;
+    const pageSize = 50; // Use a reasonable page size
 
     while (currentPage < maxPages) {
       try {
