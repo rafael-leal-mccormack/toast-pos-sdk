@@ -245,7 +245,7 @@ runner.test('Should reinitialize orders API when token is updated', () => {
 // Test 10: Parameter validation for required fields
 runner.test('Should handle missing required parameters appropriately', async () => {
   const client = new ToastClient('https://test.com', 'test-token');
-  
+
   // These should not throw immediately (validation happens at HTTP level)
   // but should be properly structured
   try {
@@ -256,7 +256,7 @@ runner.test('Should handle missing required parameters appropriately', async () 
     // Expected to fail at HTTP level, not parameter level
     runner.assert(true); // Test passes if we get here without crashing
   }
-  
+
   try {
     await client.orders.getOrder({
       guid: '',
@@ -266,6 +266,171 @@ runner.test('Should handle missing required parameters appropriately', async () 
     // Expected to fail at HTTP level, not parameter level
     runner.assert(true); // Test passes if we get here without crashing
   }
+});
+
+// Test 11: filterLiveOrders should correctly identify live orders
+runner.test('Should correctly filter live orders by fulfillment status', () => {
+  const client = new ToastClient('https://test.com', 'test-token');
+
+  // Create test orders with different fulfillment statuses
+  const testOrders = [
+    {
+      guid: 'order-1',
+      checks: [{
+        selections: [
+          { fulfillmentStatus: 'NEW', displayName: 'Item 1' },
+          { fulfillmentStatus: 'READY', displayName: 'Item 2' }
+        ]
+      }]
+    },
+    {
+      guid: 'order-2',
+      checks: [{
+        selections: [
+          { fulfillmentStatus: 'READY', displayName: 'Item 3' },
+          { fulfillmentStatus: 'READY', displayName: 'Item 4' }
+        ]
+      }]
+    },
+    {
+      guid: 'order-3',
+      checks: [{
+        selections: [
+          { fulfillmentStatus: 'HOLD', displayName: 'Item 5' }
+        ]
+      }]
+    },
+    {
+      guid: 'order-4',
+      checks: [{
+        selections: [
+          { fulfillmentStatus: 'SENT', displayName: 'Item 6' },
+          { fulfillmentStatus: 'SENT', displayName: 'Item 7' }
+        ]
+      }]
+    },
+    {
+      guid: 'order-5',
+      checks: [] // Empty checks
+    },
+    {
+      guid: 'order-6',
+      checks: [{
+        selections: [] // Empty selections
+      }]
+    }
+  ];
+
+  const liveOrders = client.orders.filterLiveOrders(testOrders);
+
+  // Should return orders 1, 3, and 4 (those with NEW, HOLD, or SENT items)
+  runner.assertEqual(liveOrders.length, 3);
+  runner.assertEqual(liveOrders[0].guid, 'order-1'); // Has NEW item
+  runner.assertEqual(liveOrders[1].guid, 'order-3'); // Has HOLD item
+  runner.assertEqual(liveOrders[2].guid, 'order-4'); // Has SENT items
+});
+
+// Test 12: filterLiveOrders should handle edge cases
+runner.test('Should handle edge cases in filterLiveOrders', () => {
+  const client = new ToastClient('https://test.com', 'test-token');
+
+  // Test with empty array
+  const emptyResult = client.orders.filterLiveOrders([]);
+  runner.assertEqual(emptyResult.length, 0);
+
+  // Test with orders having no checks
+  const noChecksOrders = [
+    { guid: 'order-1' },
+    { guid: 'order-2', checks: null },
+    { guid: 'order-3', checks: undefined }
+  ];
+  const noChecksResult = client.orders.filterLiveOrders(noChecksOrders);
+  runner.assertEqual(noChecksResult.length, 0);
+
+  // Test with orders having checks but no selections
+  const noSelectionsOrders = [
+    {
+      guid: 'order-1',
+      checks: [{}]
+    },
+    {
+      guid: 'order-2',
+      checks: [{ selections: null }]
+    },
+    {
+      guid: 'order-3',
+      checks: [{ selections: undefined }]
+    }
+  ];
+  const noSelectionsResult = client.orders.filterLiveOrders(noSelectionsOrders);
+  runner.assertEqual(noSelectionsResult.length, 0);
+
+  // Test with selections having no fulfillmentStatus
+  const noStatusOrders = [
+    {
+      guid: 'order-1',
+      checks: [{
+        selections: [
+          { displayName: 'Item 1' }, // No fulfillmentStatus
+          { displayName: 'Item 2', fulfillmentStatus: null },
+          { displayName: 'Item 3', fulfillmentStatus: undefined }
+        ]
+      }]
+    }
+  ];
+  const noStatusResult = client.orders.filterLiveOrders(noStatusOrders);
+  runner.assertEqual(noStatusResult.length, 0);
+});
+
+// Test 13: getLiveOrders should work with mocked getAllOrders
+runner.test('Should work correctly with getLiveOrders method', async () => {
+  const client = new ToastClient('https://test.com', 'test-token');
+
+  // Mock getAllOrders to return test data
+  const originalGetAllOrders = client.orders.getAllOrders;
+  client.orders.getAllOrders = async () => {
+    return [
+      {
+        guid: 'live-order-1',
+        checks: [{
+          selections: [{ fulfillmentStatus: 'NEW' }]
+        }]
+      },
+      {
+        guid: 'ready-order-1',
+        checks: [{
+          selections: [{ fulfillmentStatus: 'READY' }]
+        }]
+      },
+      {
+        guid: 'live-order-2',
+        checks: [{
+          selections: [{ fulfillmentStatus: 'SENT' }]
+        }]
+      }
+    ];
+  };
+
+  const liveOrders = await client.orders.getLiveOrders({
+    restaurantExternalId: 'test-restaurant'
+  });
+
+  runner.assertEqual(liveOrders.length, 2);
+  runner.assertEqual(liveOrders[0].guid, 'live-order-1');
+  runner.assertEqual(liveOrders[1].guid, 'live-order-2');
+
+  // Restore original method
+  client.orders.getAllOrders = originalGetAllOrders;
+});
+
+// Test 14: Live orders API methods should exist
+runner.test('Should have live orders API methods', () => {
+  const client = new ToastClient('https://test.com', 'test-token');
+  const orders = client.orders;
+
+  // Live orders methods
+  runner.assert(typeof orders.getLiveOrders === 'function');
+  runner.assert(typeof orders.filterLiveOrders === 'function');
 });
 
 // Run all tests

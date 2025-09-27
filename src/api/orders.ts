@@ -1,6 +1,6 @@
 import { HttpClient } from '../client/http-client';
 import { ToastApiResponse } from '../types';
-import { Order, OrdersBulkParams, GetOrderParams } from '../types/orders';
+import { Order, OrdersBulkParams, GetOrderParams, FulfillmentStatus } from '../types/orders';
 
 /**
  * Toast Orders API client
@@ -155,5 +155,48 @@ export class OrdersApi {
     }
 
     return allOrders;
+  }
+
+  /**
+   * Get all live orders - orders that are not yet ready or completed
+   * Live orders are those with items that have fulfillmentStatus of 'NEW', 'HOLD', or 'SENT'
+   *
+   * @param params Base parameters for the request
+   * @param maxPages Maximum number of pages to fetch (default: 10)
+   * @returns Promise resolving to live orders only
+   */
+  async getLiveOrders(
+    params: OrdersBulkParams,
+    maxPages: number = 10
+  ): Promise<Order[]> {
+    const allOrders = await this.getAllOrders(params, maxPages);
+    return this.filterLiveOrders(allOrders);
+  }
+
+  /**
+   * Filter orders to return only "live" orders
+   * Live orders are those with at least one item that has fulfillmentStatus of 'NEW', 'HOLD', or 'SENT'
+   *
+   * @param orders Array of orders to filter
+   * @returns Array of live orders
+   */
+  filterLiveOrders(orders: Order[]): Order[] {
+    const liveStatuses: FulfillmentStatus[] = ['NEW', 'HOLD', 'SENT'];
+
+    return orders.filter(order => {
+      if (!order.checks || order.checks.length === 0) {
+        return false;
+      }
+
+      return order.checks.some(check => {
+        if (!check.selections || check.selections.length === 0) {
+          return false;
+        }
+
+        return check.selections.some(selection => {
+          return selection.fulfillmentStatus && liveStatuses.includes(selection.fulfillmentStatus);
+        });
+      });
+    });
   }
 }

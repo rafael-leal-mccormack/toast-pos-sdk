@@ -262,21 +262,168 @@ async function runRealIntegrationTests() {
     });
 
     const client = new ToastClient(host, token);
-    
+
     const config = client.getConfig();
-    
+
     if (config.host !== host) {
       throw new Error(`Host mismatch: expected ${host}, got ${config.host}`);
     }
-    
+
     if (config.token !== token) {
       throw new Error('Token mismatch');
     }
-    
+
     console.log(`   ✅ Client configuration correct:`);
     console.log(`      Host: ${config.host}`);
     console.log(`      Token: ${config.token.substring(0, 20)}...`);
     console.log(`      Timeout: ${config.timeout}ms`);
+  });
+
+  // Test 8: Get orders and save to file
+  runner.test('Should get orders and save to file', async () => {
+    const host = process.env.TOAST_HOST;
+    const clientId = process.env.TOAST_USER_CLIENT_ID;
+    const clientSecret = process.env.TOAST_CLIENT_SECRET;
+
+    const token = await getToastToken({
+      host,
+      clientId,
+      clientSecret,
+    });
+
+    const client = new ToastClient(host, token);
+
+    console.log('   📝 Getting restaurants to find a restaurant ID...');
+
+    const restaurantsResponse = await client.restaurants.getAllRestaurants();
+
+    if (!restaurantsResponse.data || restaurantsResponse.data.length === 0) {
+      throw new Error('No restaurants found');
+    }
+
+    const restaurant = restaurantsResponse.data[0];
+    const restaurantExternalId = restaurant.externalRestaurantRef || restaurant.restaurantGuid;
+
+    console.log(`   📍 Using restaurant: ${restaurant.restaurantName} (ID: ${restaurantExternalId})`);
+
+    if (!restaurantExternalId) {
+      throw new Error('Restaurant external ID or GUID is required for orders API');
+    }
+
+    // Get orders for the last 2 hours
+    const endDate = new Date().toISOString();
+    const startDate = new Date();
+    startDate.setHours(startDate.getHours() - 2);
+    const startDateStr = startDate.toISOString();
+
+    console.log(`   📝 Fetching orders from ${startDateStr} to ${endDate}...`);
+
+    const ordersResponse = await client.orders.getOrdersByDateRange(
+      restaurantExternalId,
+      startDateStr,
+      endDate,
+      { pageSize: 100 }
+    );
+
+    if (!ordersResponse.data) {
+      throw new Error('Orders response should contain data');
+    }
+
+    console.log(`   ✅ Retrieved ${ordersResponse.data.length} orders`);
+
+    // Order mapping function
+    function mapOrderInfo(order) {
+      // Extract customer info from first check (most orders have one check)
+      const customer = order.checks?.[0]?.customer || null;
+
+      // Extract delivery info if it exists
+      const deliveryInfo = order.deliveryInfo || null;
+
+      // Determine if it's a delivery order
+      const isDelivery =
+        deliveryInfo && (deliveryInfo.address1 || deliveryInfo.city);
+
+      return {
+        // Order identification
+        orderGuid: order.guid,
+        displayNumber: order.displayNumber,
+
+        food: order.checks?.[0]?.selections?.map((f) => f.displayName),
+
+        // Customer information
+        customer: customer
+          ? {
+              guid: customer.guid,
+              firstName: customer.firstName,
+              lastName: customer.lastName,
+              fullName:
+                customer.firstName && customer.lastName
+                  ? `${customer.firstName} ${customer.lastName}`.trim()
+                  : customer.firstName || customer.lastName || null,
+              phone: customer.phone,
+              phoneCountryCode: customer.phoneCountryCode,
+              email: customer.email,
+            }
+          : null,
+
+        // Delivery information
+        delivery: isDelivery
+          ? {
+              fullAddress: [
+                deliveryInfo.address1,
+                deliveryInfo.address2,
+                deliveryInfo.city,
+                deliveryInfo.state || deliveryInfo.administrativeArea,
+                deliveryInfo.zipCode,
+              ]
+                .filter(Boolean)
+                .join(", "),
+            }
+          : null,
+      };
+    }
+
+    // Prepare output data
+    const outputData = {
+      restaurant: {
+        name: restaurant.restaurantName,
+        externalId: restaurantExternalId,
+        locationName: restaurant.locationName
+      },
+      dateRange: {
+        startDate: startDateStr,
+        endDate: endDate
+      },
+      totalOrders: ordersResponse.data.length,
+      orders: ordersResponse.data,
+      retrievedAt: new Date().toISOString()
+    };
+
+    // Write to file
+    const fs = require('fs');
+    const path = require('path');
+    const outputDir = path.join(__dirname, '..', 'output');
+
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const filename = `orders_${restaurantExternalId}_${startDateStr.split('T')[0]}_to_${endDate.split('T')[0]}.json`;
+    const filepath = path.join(outputDir, filename);
+
+    fs.writeFileSync(filepath, JSON.stringify(outputData, null, 2));
+
+    console.log(`   📄 Orders data saved to: ${filepath}`);
+    console.log(`   📊 Summary: ${outputData.totalOrders} orders saved`);
+
+    if (ordersResponse.data.length > 0) {
+      const firstOrder = ordersResponse.data[0];
+      console.log(`   📋 First order: ${firstOrder.guid} (${firstOrder.createdDate})`);
+      if (firstOrder.checks && firstOrder.checks.length > 0) {
+        console.log(`   💰 First order total: ${firstOrder.checks[0].totalAmount || 'N/A'}`);
+      }
+    }
   });
 
   await runner.run();

@@ -16,7 +16,7 @@ export interface ToastEntityWithMultiLocation extends ToastEntity {
 // Enums and Union Types
 export type UnitOfMeasure = 'NONE';
 export type SelectionType = 'NONE';
-export type FulfillmentStatus = 'NEW';
+export type FulfillmentStatus = 'NEW' | 'HOLD' | 'SENT' | 'READY';
 export type TaxInclusion = 'INCLUDED';
 export type ChargeType = 'FIXED';
 export type PaymentType = 'CASH';
